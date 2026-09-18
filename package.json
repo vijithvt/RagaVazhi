@@ -1,0 +1,15 @@
+{
+  "name": "ragavazhi",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspace=@ragavazhi/web",
+    "build": "npm run build --workspace=@ragavazhi/web",
+    "start": "npm run start --workspace=@ragavazhi/web",
+    "lint": "npm run lint --workspace=@ragavazhi/web",
+    "test": "npm run test --workspace=@ragavazhi/web",
+    "typecheck": "npm run typecheck --workspace=@ragavazhi/web"
+  },
+  "engines": { "node": ">=20" }
+}

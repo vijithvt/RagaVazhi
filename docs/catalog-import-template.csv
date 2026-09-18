@@ -1,0 +1,2 @@
+entity_type,slug,title_en,title_ml,language,kind,raga_slug,raga_confidence,tala,composer,lyricist,singer,release,year,source_label,source_url,source_license,editor_note
+composition,example-song,Example title,ഉദാഹരണ ശീർഷകം,Malayalam,film,mohanam,medium,Adi,Composer name,Lyricist name,Singer name,Film title,2000,Authoritative source,https://example.com,,REPLACE THIS ROW; imports begin as drafts

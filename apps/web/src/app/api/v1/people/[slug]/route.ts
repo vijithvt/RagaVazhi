@@ -1,0 +1,3 @@
+import { publicJson } from "@/lib/http";
+import { compositions, personBySlug, tutorials } from "@/lib/catalog";
+export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) { const slug = decodeURIComponent((await params).slug); const person = personBySlug(slug); if (!person) return publicJson({ error: "Person not found" }, { status: 404 }); const works = compositions.filter((c) => c.credits.some((credit) => credit.person === person.name)); const lessons = tutorials.filter((tutorial) => tutorial.teacher === person.name); return publicJson({ ...person, works, lessons }); }

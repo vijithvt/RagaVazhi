@@ -1,0 +1,27 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowUpRight, BookOpen, Headphones, PlayCircle } from "lucide-react";
+import { compositions, ragaBySlug, ragas, tutorials } from "@/lib/catalog";
+
+export async function generateStaticParams() { return ragas.map(({ slug }) => ({ slug })); }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const raga = ragaBySlug((await params).slug); return { title: raga?.name.en || "Raga", description: raga?.signature.en }; }
+
+export default async function RagaPage({ params }: { params: Promise<{ slug: string }> }) {
+  const raga = ragaBySlug((await params).slug); if (!raga) notFound();
+  const songs = compositions.filter((composition) => composition.raga === raga.slug);
+  const lessons = tutorials.filter((tutorial) => tutorial.raga === raga.slug);
+  return <><section className="detail-hero" style={{ background: `linear-gradient(125deg, ${raga.color}, #244d3d)` }}><div className="container"><div className="breadcrumbs"><Link href="/">Home</Link> / <Link href="/search?type=raga">Ragas</Link> / {raga.name.en}</div><div className="detail-title"><div><span className="pill saffron">{raga.system} · guided listening</span><h1 className="serif">{raga.name.en}</h1><div className="ml-title malayalam">{raga.name.ml}</div></div><div><span className="small">Mood & colour</span><strong style={{ display: "block", marginTop: 6 }}>{raga.mood.en}</strong></div></div><div className="detail-scale"><div><small>Arohana · ആരോഹണം</small><code>{raga.arohana}</code></div><div><small>Avarohana · അവരോഹണം</small><code>{raga.avarohana}</code></div></div></div></section>
+    <div className="container detail-layout"><article>
+      <section className="content-section"><span className="eyebrow">Listen for this</span><h2>{raga.signature.en}</h2><p className="malayalam">{raga.signature.ml}</p><p>{raga.overview.en}</p></section>
+      <section className="content-section"><h2>Signature phrases</h2><div className="phrase-row">{raga.phrases.map((phrase) => <span className="phrase" key={phrase}>{phrase}</span>)}</div><p className="small">A scale is only a map. Treat these as listening cues, not a complete grammar of the raga.</p></section>
+      <section className="content-section"><span className="eyebrow">Listening ladder</span><h2>Four steps into {raga.name.en}</h2><div className="ladder"><div className="ladder-step"><h3>Hear the scale</h3><p>Sing slowly against a steady tonic.</p></div><div className="ladder-step"><h3>Find the phrase</h3><p>Return to {raga.phrases[0]} without rushing.</p></div><div className="ladder-step"><h3>Meet a composition</h3><p>{songs[0]?.title.en || "An editor-curated example is being prepared."}</p></div><div className="ladder-step"><h3>Compare</h3><p>{raga.relations[0] ? `Contrast ${ragaBySlug(raga.relations[0].slug)?.name.en}.` : "A comparison is being reviewed."}</p></div></div></section>
+      <section className="content-section"><div className="section-head" style={{ marginBottom: 10 }}><div><span className="eyebrow">Compositions</span><h2>Hear the raga in context</h2></div></div>{songs.length ? songs.map((song) => <Link href={`/songs/${song.slug}`} className="composition-row" key={song.id}><div><h3>{song.title.en} <span className="malayalam muted">· {song.title.ml}</span></h3><p>{song.credits[0]?.person} · {song.tala} tala</p></div><ArrowUpRight size={18} color="#a8452d" /></Link>) : <div className="notice">No composition has passed editorial review for this demo raga yet.</div>}</section>
+      <section className="content-section"><h2>Lessons and demonstrations</h2>{lessons.length ? lessons.map((lesson) => <a className="media-link" href={lesson.media.url} key={lesson.id}><span><strong>{lesson.title.en}</strong><span className="muted small" style={{ display: "block" }}>{lesson.teacher} · {lesson.instrument} · {lesson.level}</span></span><PlayCircle color="#a8452d" /></a>) : <p>Instrument and vocal lessons will appear here after link verification.</p>}</section>
+    </article><aside>
+      <div className="card side-card"><h3>Raga at a glance</h3>{raga.melakarta && <div className="fact"><span>Melakarta</span><strong>{raga.melakarta}</strong></div>}<div className="fact"><span>System</span><strong>{raga.system}</strong></div><div className="fact"><span>Important swaras</span><strong>{raga.importantSwaras.join(" · ")}</strong></div><div className="fact"><span>Aliases</span><strong>{raga.aliases[0]}</strong></div></div>
+      <div className="card side-card"><h3>Related ragas</h3>{raga.relations.length ? raga.relations.map((relation) => <Link href={`/ragas/${relation.slug}`} className="relation-card" style={{ display: "block" }} key={relation.slug}><strong>{ragaBySlug(relation.slug)?.name.en} <span className="pill">{relation.kind}</span></strong><p>{relation.reason.en}</p></Link>) : <p className="muted small">Relations are under editorial review.</p>}</div>
+      <div className="card side-card"><h3>Sources</h3><ul className="source-list">{raga.citations.map((citation) => <li key={citation.id}><a href={citation.url}>{citation.label}</a><br />{citation.license} · retrieved {citation.retrievedAt}</li>)}</ul></div>
+      <Link href={`/corrections?entity=${raga.slug}`} className="text-link"><BookOpen size={16} /> Report a correction</Link>
+    </aside></div></>;
+}
