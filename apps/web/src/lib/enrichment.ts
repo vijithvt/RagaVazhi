@@ -96,6 +96,16 @@ async function enrichUncached(title: string, composer: string, language: string)
 
 export const enrichSong = unstable_cache(enrichUncached, ["song-web-enrichment-v1"], { revalidate: 86_400, tags: ["song-enrichment"] });
 
+export async function discoverNotationSources(title: string, composer: string, language: string, limit = 6): Promise<WebCandidate[]> {
+  const { media } = await enrichSong(title, composer, language);
+  const seen = new Set<string>();
+  return media.filter((candidate) => {
+    if (candidate.kind !== "youtube" || !candidate.videoId || seen.has(candidate.videoId)) return false;
+    seen.add(candidate.videoId);
+    return true;
+  }).slice(0, limit);
+}
+
 const suggestionSchema = z.object({
   overview: z.string(),
   listeningCues: z.array(z.string()).max(4),

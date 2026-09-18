@@ -98,6 +98,51 @@ export interface Tutorial {
   state: EditorialState;
 }
 
+export type SwaraLetter = "S" | "R1" | "R2" | "R3" | "G1" | "G2" | "G3" | "M1" | "M2" | "P" | "D1" | "D2" | "D3" | "N1" | "N2" | "N3";
+export type Sthayi = "mandra" | "madhya" | "tara";
+
+export interface SwaraToken {
+  swara: SwaraLetter;
+  sthayi: Sthayi;
+  startMs: number;
+  durationMs?: number;
+  confidence: Confidence;
+}
+
+export interface NotationLine {
+  index: number;
+  lyricText?: string;
+  swaras: SwaraToken[];
+  startMs: number;
+  endMs: number;
+}
+
+export interface NotationSource {
+  id: string;
+  url: string;
+  videoId: string;
+  kind: "original" | "cover" | "tutorial" | "unknown";
+  detectedTonic?: string;
+  tonicConfidence?: Confidence;
+  pitchTrackModel: string;
+}
+
+export interface NotationDraft {
+  id: string;
+  recordingId?: string;
+  compositionSlug: string;
+  sources: NotationSource[];
+  perSourceLines: { sourceId: string; lines: NotationLine[] }[];
+  finalizedLines: NotationLine[];
+  overallConfidence: Confidence;
+  judgeRationale?: string;
+  citations: Citation[];
+  promptVersion: string;
+  model: string;
+  createdBy: string;
+  state: EditorialState;
+}
+
 export interface SearchItem {
   id: string;
   slug: string;
